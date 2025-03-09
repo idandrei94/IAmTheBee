@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     default: APP_NAME
   },
   description: APP_DESC,
-  icons: ['icon.png'],
+  icons: ['/icon.png'],
   metadataBase: new URL(BASE_URL)
 };
 

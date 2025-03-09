@@ -1,29 +1,19 @@
 import {Metadata, NextPage} from 'next';
-import sampleData from '@/db.json';
 import MovieList from '@/components/common/movies/movie-list';
-import {Movie} from '@/models/movie';
+import {getMovies} from '@/lib/actions/movie.actions';
 
 export const metadata: Metadata = {
   title: 'Home'
 };
 
 const HomePage: NextPage = async () => {
-  const allMovies = await Promise.resolve(
-    (sampleData as Movie[]).map((m) => ({
-      ...m,
-      comments: Math.floor(Math.random() * 100),
-      rating: Math.random() * 5
-    }))
-  );
-  const trendingMovies = allMovies
-    .sort((a, b) => a.comments - b.comments)
+  // Get the movies from the DB using the serverAction
+  const allMovies = await getMovies();
+  const trendingMovies = [...allMovies]
+    .sort((a, b) => b.comments - a.comments)
     .slice(0, 8);
-  const newMovies = allMovies
-    .sort(
-      (a, b) =>
-        new Date(b.release_date).getFullYear() -
-        new Date(a.release_date).getFullYear()
-    )
+  const newMovies = [...allMovies]
+    .sort((a, b) => b.release_date.getFullYear() - a.release_date.getFullYear())
     .slice(0, 8);
 
   return (
@@ -31,7 +21,7 @@ const HomePage: NextPage = async () => {
       <MovieList
         movies={[]}
         title='Following'
-        notFound='You are not following any movies. Check our great library!'
+        notFound='You are not following any movies. Check out our great library!'
       />
       <MovieList
         movies={newMovies}

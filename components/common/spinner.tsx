@@ -4,10 +4,10 @@ const Spinner = () => {
   return (
     <div
       role='status'
-      className='h-full w-full'>
+      className='h-full w-full flex flex-col items-center justify-center'>
       <svg
         aria-hidden='true'
-        className='w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600'
+        className='w-3/12 h-3/12 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600'
         viewBox='0 0 100 101'
         fill='none'
         xmlns='http://www.w3.org/2000/svg'>

@@ -1,9 +1,9 @@
-import {Movie} from '@/models/movie';
+import {ReadMovieViewModel} from '@/models/movie';
 import React from 'react';
 import MovieListItem from './movie-list-item';
 
 interface Props {
-  movies: Movie[];
+  movies: ReadMovieViewModel[];
   title?: string;
   notFound?: string;
 }

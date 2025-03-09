@@ -26,6 +26,9 @@ const Header = () => {
         </div>
         <HeaderMenu />
       </div>
+      <div className='text-destructive-foreground bg-destructive w-full text-center py-3 font-3xl font-bold'>
+        This Website is just a demo and is not indented for any real use.
+      </div>
     </header>
   );
 };

@@ -1,0 +1,67 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Movie {
+  id              Int               @id @default(autoincrement())
+  title           String
+  description     String
+  release_date    DateTime
+  poster_path     String
+  UserComment     UserComment[]
+  UserMovieFollow UserMovieFollow[]
+  UserRating      UserRating[]
+}
+
+model User {
+  email           String            @id @unique
+  password        String
+  name            String
+  UserComment     UserComment[]
+  UserMovieFollow UserMovieFollow[]
+  roles           Roles[]
+  UserRating      UserRating[]
+}
+
+model Roles {
+  id    Int    @id @default(autoincrement())
+  name  String
+  users User[]
+}
+
+model UserComment {
+  comment  String
+  user     User     @relation(fields: [userId], references: [email])
+  userId   String
+  movie    Movie    @relation(fields: [movieId], references: [id])
+  movieId  Int
+  postedAt DateTime
+
+  @@id([userId, movieId])
+}
+
+model UserRating {
+  rating  Int
+  user    User   @relation(fields: [userId], references: [email])
+  userId  String
+  movie   Movie  @relation(fields: [movieId], references: [id])
+  movieId Int
+
+  @@id([userId, movieId])
+}
+
+model UserMovieFollow {
+  user        User   @relation(fields: [userId], references: [email])
+  userId      String
+  movie       Movie  @relation(fields: [movieId], references: [id])
+  movieId     Int
+  unseenCount Int
+
+  @@id([userId, movieId])
+}
