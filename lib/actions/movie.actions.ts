@@ -6,6 +6,7 @@ import { prisma } from '@/db/prisma';
 import { validMovieId } from '@/models/movie/validators';
 import { getUserEmail } from '../utils';
 import { revalidatePath } from 'next/cache';
+import { Prisma } from '@prisma/client';
 
 // Get the Movie list from Db and map to ReadViewModel
 // This is horribly inefficient, but it's just a demo
@@ -119,13 +120,20 @@ export const followMovie: (movieId: string, follow: boolean) => Promise<{ ok: bo
   }
 
   if (follow) {
-    await prisma.userMovieFollow.create({
-      data: {
-        movieId: parseInt(validatedId),
-        userId: email,
-        unseenCount: 0
+    try {
+      await prisma.userMovieFollow.create({
+        data: {
+          movieId: parseInt(validatedId),
+          userId: email,
+          unseenCount: 0
+        }
+      });
+    } catch (ex) {
+      // For simplicity, if you're already following the movie, I guess success?
+      if (ex instanceof Prisma.PrismaClientKnownRequestError && ex.code !== 'P2002') {
+        return { ok: false, message: `Db error.` };
       }
-    });
+    }
   } else {
     await prisma.userMovieFollow.deleteMany({
       where: {
