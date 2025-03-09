@@ -7,7 +7,6 @@ async function main() {
   await prisma.userRating.deleteMany();
   await prisma.userComment.deleteMany();
   await prisma.userMovieFollow.deleteMany();
-  await prisma.user.deleteMany();
   await prisma.roles.deleteMany();
   await prisma.movie.deleteMany();
 
