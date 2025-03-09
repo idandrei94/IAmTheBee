@@ -1,4 +1,4 @@
-import {getMovieById} from '@/lib/actions/movie.actions';
+import {getMovieById, getMovies} from '@/lib/actions/movie.actions';
 import {NextPage} from 'next';
 import {notFound} from 'next/navigation';
 import React from 'react';
@@ -75,6 +75,12 @@ const MovieId: NextPage<Props> = async ({params}) => {
         </div>
       </div>
     </div>
+  );
+};
+
+export const generateStaticParams = async () => {
+  return await getMovies().then((movies) =>
+    movies.map((movie) => ({params: {movieId: movie.id.toString()}}))
   );
 };
 
