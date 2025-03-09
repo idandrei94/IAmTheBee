@@ -1,14 +1,19 @@
 import {Metadata, NextPage} from 'next';
 import MovieList from '@/components/common/movies/movie-list';
-import {getMovies} from '@/lib/actions/movie.actions';
+import {getMovies, getUserFollows} from '@/lib/actions/movie.actions';
 
 export const metadata: Metadata = {
   title: 'Home'
 };
 
 const HomePage: NextPage = async () => {
+  const followedMovies: number[] = await getUserFollows();
+
   // Get the movies from the DB using the serverAction
-  const allMovies = await getMovies();
+  const allMovies = [...(await getMovies())].map((m) => ({
+    ...m,
+    isMovieFollowed: followedMovies.includes(m.id)
+  }));
   const trendingMovies = [...allMovies]
     .sort((a, b) => b.comments - a.comments)
     .slice(0, 8);

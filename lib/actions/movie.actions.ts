@@ -4,6 +4,8 @@ import { ReadMovieViewModel } from '@/models/movie';
 // Instead we use our own custom instance
 import { prisma } from '@/db/prisma';
 import { validMovieId } from '@/models/movie/validators';
+import { getUserEmail } from '../utils';
+import { revalidatePath } from 'next/cache';
 
 // Get the Movie list from Db and map to ReadViewModel
 // This is horribly inefficient, but it's just a demo
@@ -42,7 +44,6 @@ export const getMovies: () => Promise<ReadMovieViewModel[]> = async () => {
 
 export const getMovieById: (id: string) => Promise<ReadMovieViewModel | null> = async (id) => {
   const { success, data: validatedId } = validMovieId.safeParse(id);
-  console.log("Validating Movie ID", id);
   if (!success) {
     // Maybe throw some custom error, but I'll just redirect to Not Found
     console.log("Bad ID: ", id);
@@ -86,4 +87,59 @@ export const getMovieById: (id: string) => Promise<ReadMovieViewModel | null> = 
     };
     return movieViewModel;
   }
+};
+
+export const getUserFollows: () => Promise<number[]> = async () => {
+  const email = await getUserEmail();
+  if (!email) {
+    // Maybe throw some custom error, but I'll just redirect to Not Found
+    console.log("Unauthorized: ", email);
+    return [];
+  }
+
+  const movies = await prisma.userMovieFollow.findMany({ where: { userId: email } });
+
+  return movies.map(m => m.movieId);
+};
+export const followMovie: (movieId: string, follow: boolean) => Promise<{ ok: boolean, message?: string; }> = async (movieId, follow) => {
+  // Check if the user is authorized
+  const email = await getUserEmail();
+  if (!email) {
+    // Maybe throw some custom error, but I'll just redirect to Not Found
+    console.log("Unauthorized: ", email);
+    // I like to do something with a status code list, or a discriminated union of errors, I'll just handle the message contents
+    return { ok: false, message: 'You must login first.' };
+  }
+  // Validate the movieId
+  const { success, data: validatedId } = validMovieId.safeParse(movieId);
+  if (!success) {
+    // Maybe throw some custom error, but I'll just redirect to Not Found
+    console.log("bad request", movieId);
+    return { ok: false, message: `Invalid Movie Id: ${movieId}` };
+  }
+
+  if (follow) {
+    await prisma.userMovieFollow.create({
+      data: {
+        movieId: parseInt(validatedId),
+        userId: email,
+        unseenCount: 0
+      }
+    });
+  } else {
+    await prisma.userMovieFollow.deleteMany({
+      where: {
+        movieId: parseInt(validatedId),
+        userId: email
+      }
+    });
+  }
+
+  {/*
+    https://nextjs.org/docs/app/api-reference/functions/revalidatePath
+    */}
+  revalidatePath(`/movie/${movieId}`);
+  revalidatePath(`/`);
+
+  return { ok: true, message: `You ${follow ? 'followed' : 'unfollowed'} the movie.` };
 };

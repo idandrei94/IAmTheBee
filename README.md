@@ -1,15 +1,15 @@
 01: Create the app, setup Tailwind, ShadCN UI and UI basics
-02: Prepare some data to work with, courtesy of themoviedb.org
+02: Prepare some data to work with, courtesy of themoviedb.org (check ./db)
 03: Prepare some basic display components for the Home Page
-04: Get the data in the Home Page through the backend
-05: Get some nice DB Connections \\('o')/ and stuff like that
-06: Implement some nicer display components for home page and details page
-07: Setup login/auth stuff
-08: Setup the like feature
-09: Setup the rating feature
-10: Setup comments
-10: Login popup on guarded actions
-11: Setup admin roles (probably gonna skip role management and just do it db-side)
+04: Get the data in the Home Page through the backend (using Prisma and Neon Postgres). Because the apis are serverless, did a wee bit of WebSocket config sorcery on a custom PrismaClient to make it work. Nothing fancy, just docs stuff (check ./db/prisma.ts)
+05: Get the DB data through backend using server actions.
+06: Implement some nicer display components for home page and details page.
+07: Setup login/auth stuff, using Github OAUTH. I'll just validate the admin roles during server actions.
+08: Implement the follow (sort of wishlist) feature. It's not the most efficient thing, but just to get it going. At least I only validate the user movie list once in the page, and pass that along to whatever display components need the information.
+09: Setup the rating feature.
+10: Setup comments.
+10: Login popup on guarded actions. Just something simple like "Yo, login first!".
+11: Setup Admin pages (probably gonna skip role management and just do it db-side)
 12: Setup Admin Movie C(r)UD
 13: Setup Comments C(r)UD
 14: Pick an LLM, create connections between movies. Without some more specific usecases, I'm rather uncomfortable with directly searching via LLM. I could limit it to registered users, I could add some sort of rate limits. I'm rather partial towards just LLM'ing movies when they are created.

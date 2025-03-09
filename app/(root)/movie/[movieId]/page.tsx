@@ -1,4 +1,8 @@
-import {getMovieById, getMovies} from '@/lib/actions/movie.actions';
+import {
+  getMovieById,
+  getMovies,
+  getUserFollows
+} from '@/lib/actions/movie.actions';
 import {NextPage} from 'next';
 import {notFound} from 'next/navigation';
 import React from 'react';
@@ -8,6 +12,7 @@ import Link from 'next/link';
 import {ArrowLeftCircleIcon} from '@heroicons/react/24/outline';
 import MovieRating from '@/components/common/movies/movie-rating';
 import LikeButton from '@/components/common/movies/movie-list-item-like-button';
+import {auth} from '@/auth/auth';
 
 interface Props {
   params: Promise<{movieId: string}>;
@@ -19,6 +24,9 @@ const MovieId: NextPage<Props> = async ({params}) => {
   if (!movie) {
     return notFound();
   }
+  const email = (await auth())?.user?.email;
+  const isMovieFollowed =
+    !!email && (await getUserFollows()).includes(movie.id);
 
   return (
     <div className='w-full h-full flex flex-col items-center justify-start p-5'>
@@ -54,10 +62,13 @@ const MovieId: NextPage<Props> = async ({params}) => {
                 Year: {movie.release_date.getFullYear()}
               </div>
               <div className='pb-8 flex flex-row items-center justify-between gap-3'>
-                <MovieRating stars={movie.rating} />{' '}
+                <MovieRating stars={movie.rating} />
                 <div className='flex flex-row items-center justify start'>
-                  {movie.id % 2 ? 'Already following' : 'Follow'}
-                  <LikeButton movie={movie} />
+                  {isMovieFollowed ? 'Already following' : 'Not following'}
+                  <LikeButton
+                    movie={movie}
+                    isMovieFollowed={isMovieFollowed}
+                  />
                 </div>
               </div>
               <div className='text-xl'>{movie.description}</div>

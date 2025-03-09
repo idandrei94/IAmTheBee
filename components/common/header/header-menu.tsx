@@ -1,11 +1,5 @@
-import {
-  HeartIcon,
-  UserIcon,
-  EllipsisVerticalIcon
-} from '@heroicons/react/24/solid';
+import {EllipsisVerticalIcon} from '@heroicons/react/24/solid';
 import React from 'react';
-import {Button} from '@/components/ui/button';
-import Link from 'next/link';
 import {
   Sheet,
   SheetContent,
@@ -13,43 +7,13 @@ import {
   SheetTitle,
   SheetTrigger
 } from '@/components/ui/sheet';
+import UserMenu from '../user-menu';
 
-const NavButtons = () => {
-  return (
-    <React.Fragment>
-      <Button
-        asChild
-        variant='destructive'>
-        <Link
-          href='/favorites'
-          className='space-x-1/2'>
-          <HeartIcon
-            height={24}
-            width={24}
-          />
-          <span>Favorites</span>
-        </Link>
-      </Button>
-      <Button asChild>
-        <Link
-          href='/login'
-          className='space-x-1/2'>
-          <UserIcon
-            height={24}
-            width={24}
-          />
-          <span>Login</span>
-        </Link>
-      </Button>
-    </React.Fragment>
-  );
-};
-
-const HeaderMenu = () => {
+const HeaderMenu = async () => {
   return (
     <div className='flex justify-end gap-3'>
       <nav className='hidden md:flex w-full max-w-xs gap-1'>
-        <NavButtons />
+        <UserMenu />
       </nav>
       <nav className='md:hidden'>
         <Sheet>
@@ -61,7 +25,7 @@ const HeaderMenu = () => {
           </SheetTrigger>
           <SheetContent className='flex flex-col items-start'>
             <SheetTitle>Menu</SheetTitle>
-            <NavButtons />
+            <UserMenu />
             <SheetDescription></SheetDescription>
           </SheetContent>
         </Sheet>

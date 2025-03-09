@@ -3,7 +3,7 @@ import React from 'react';
 import MovieListItem from './movie-list-item';
 
 interface Props {
-  movies: ReadMovieViewModel[];
+  movies: (ReadMovieViewModel & {isMovieFollowed: boolean})[];
   title?: string;
   notFound?: string;
 }

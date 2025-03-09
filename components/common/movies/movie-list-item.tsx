@@ -9,7 +9,7 @@ import {IMAGE_BASE_URL} from '@/lib/constants';
 import LikeButton from './movie-list-item-like-button';
 
 interface Props {
-  movie: ReadMovieViewModel;
+  movie: ReadMovieViewModel & {isMovieFollowed: boolean};
 }
 
 const MovieListItem: React.FC<Props> = ({movie}) => {
@@ -20,7 +20,10 @@ const MovieListItem: React.FC<Props> = ({movie}) => {
           href={`/movie/${movie.id}`}
           className='relative h-[450px] w-full'>
           <div className='absolute top-2 right-2 z-10'>
-            <LikeButton movie={movie} />
+            <LikeButton
+              movie={movie}
+              isMovieFollowed={movie.isMovieFollowed}
+            />
           </div>
           <Image
             className='object-cover -mt-2'
