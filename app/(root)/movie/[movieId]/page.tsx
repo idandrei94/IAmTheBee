@@ -13,7 +13,8 @@ import MovieList from '@/components/common/movies/movie-list';
 import MovieRating from '@/components/common/movies/movie-rating';
 import Comments from '@/components/comments';
 
-const showSuggestions = false;
+const hideSuggetions = !!process.env.HIDE_LLM_SUGGESTIONS;
+
 interface Props {
   params: Promise<{movieId: string}>;
 }
@@ -25,7 +26,7 @@ const MovieId: NextPage<Props> = async ({params}) => {
     return notFound();
   }
 
-  const relatedMovies = showSuggestions
+  const relatedMovies = !hideSuggetions
     ? await getMovieSuggestions(
         movie.description.substring(0, 250),
         `${movie.id}`

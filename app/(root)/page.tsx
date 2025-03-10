@@ -1,5 +1,4 @@
 import {Metadata, NextPage} from 'next';
-import MovieList from '@/components/common/movies/movie-list';
 import {getMovies} from '@/lib/actions/movie.actions';
 import {getUserEmail} from '@/lib/utils';
 import FollowedMovieList from '@/components/common/movies/followed-movie-list';

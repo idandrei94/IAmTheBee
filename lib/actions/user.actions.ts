@@ -1,14 +1,13 @@
 "use server";
 import { auth, signIn, signOut } from '@/auth/auth';
 import { prisma } from '@/db/prisma';
-import { validMovieId, validOrEmptyMovieId } from '@/models/movie/validators';
+import { validOrEmptyMovieId } from '@/models/movie/validators';
 import { revalidatePath } from 'next/cache';
 
 export const login = async (redirect?: string) => {
   await signIn('github', { redirectTo: redirect || '/' });
 };
 export const logout = async () => {
-  console.log('logout');
   await signOut({ redirectTo: '/' });
 };
 
@@ -91,6 +90,5 @@ export const isAdmin: () => Promise<boolean> = async () => {
     }
   }));
 
-  console.log('check role');
   return !!role;
 };

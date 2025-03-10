@@ -1,6 +1,5 @@
 import {ReadMovieViewModel} from '@/models/movie';
 import React from 'react';
-import MovieListItem from './movie-list-item';
 import classNames from 'classnames';
 
 interface Props {

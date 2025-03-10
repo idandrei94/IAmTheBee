@@ -120,7 +120,7 @@ const CreateCommentForm: React.FC<Props> = (props) => {
                 <FormField
                   control={form.control}
                   name='comment'
-                  render={({field}: {field: MovieIdFormField}) => (
+                  render={() => (
                     <FormItem>
                       <FormMessage />
                     </FormItem>

@@ -10,7 +10,7 @@ interface Props {
 const ClearNotifs: React.FC<Props> = ({movieId}) => {
   useEffect(() => {
     clearNotifications(movieId);
-  }, []);
+  }, [movieId]);
 
   return null;
 };

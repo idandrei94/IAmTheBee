@@ -13,7 +13,7 @@ const CommentListItem: React.FC<Props> = async ({
   comment: commentViewModel,
   userIsAdmin
 }) => {
-  const {comment, movieId, postedAt, userId, id} = commentViewModel;
+  const {comment, postedAt, userId} = commentViewModel;
   const currentUser = (await auth())?.user?.email;
   const isCommentYours = userId === currentUser;
   return (

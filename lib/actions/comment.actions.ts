@@ -5,11 +5,11 @@ import { UserCommentViewModel } from '@/models/comment';
 import { isValidCommentId, postCommentSchema } from '@/models/comment/validators';
 import { validMovieId } from '@/models/movie/validators';
 import { revalidatePath } from 'next/cache';
-import { number, z } from 'zod';
+import { z } from 'zod';
 import { isAdmin } from './user.actions';
 
 export const getMovieComments: (movieId: string) => Promise<UserCommentViewModel[]> = async (movieId) => {
-  var { success } = validMovieId.safeParse(movieId);
+  const { success } = validMovieId.safeParse(movieId);
   if (!success) {
     return [];
   }
@@ -39,7 +39,7 @@ export const postOrUpdateComment: (newComment: z.infer<typeof postCommentSchema>
 
   // if we're trying to update a comment, make sure it's a valid id
   if (mode === 'update') {
-    const { success, data } = isValidCommentId.safeParse(commentId);
+    const { success } = isValidCommentId.safeParse(commentId);
     if (!success) {
       return false;
     }
@@ -172,7 +172,7 @@ export const deleteComment: (commentId: number) => Promise<void> = async (commen
     return;
   }
 
-  var existingComment = (await prisma.userComment.findFirst({
+  const existingComment = (await prisma.userComment.findFirst({
     where: { id: commentId }
   }));
 
