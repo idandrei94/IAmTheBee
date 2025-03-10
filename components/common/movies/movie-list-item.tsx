@@ -58,7 +58,10 @@ const MovieListItem: React.FC<Props> = ({movie}) => {
               />
               {movie.comments}
             </Link>
-            <MovieRating stars={movie.rating} />
+            <MovieRating
+              stars={movie.rating}
+              movieId={movie.id}
+            />
           </div>
         </div>
       </CardContent>
