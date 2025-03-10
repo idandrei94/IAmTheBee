@@ -1,4 +1,4 @@
-import {getMovieById, getMovies} from '@/lib/actions/movie.actions';
+import {getMovieById} from '@/lib/actions/movie.actions';
 import {NextPage} from 'next';
 import {notFound} from 'next/navigation';
 import React from 'react';
