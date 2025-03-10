@@ -4,13 +4,16 @@ import Link from 'next/link';
 import React from 'react';
 import {auth} from '@/auth/auth';
 import LoginButton from './login-button';
+import {getNotificationCount} from '@/lib/actions/user.actions';
 
 const UserMenu = async () => {
   const session = await auth();
   const logged = !!session;
 
+  const notifCount = await getNotificationCount('');
+
   return (
-    <div className='flex flex-col lg:flex-row items-start lg:items-center justify-end gap-3'>
+    <div className='flex flex-col md:flex-row items-start md:items-center justify-end gap-3'>
       {logged && (
         <React.Fragment>
           <span className='text-nowrap'>Hello, Bob! </span>
@@ -18,13 +21,18 @@ const UserMenu = async () => {
             asChild
             variant='destructive'>
             <Link
-              href='/favorites'
-              className='space-x-1/2'>
+              href='/movie/following'
+              className='space-x-1/2 relative'>
               <HeartIcon
                 height={24}
                 width={24}
               />
-              <span>Favorites</span>
+              <span>Following </span>
+              {!!notifCount && (
+                <span className='absolute -top-1.5 -right-1.5 p-1 bg-yellow-400 text-red-900 rounded-full text-xs'>
+                  {notifCount}
+                </span>
+              )}
             </Link>
           </Button>
         </React.Fragment>

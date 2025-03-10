@@ -7,14 +7,17 @@ import { validMovieId, validRating } from '@/models/movie/validators';
 import { getUserEmail } from '../utils';
 import { revalidatePath } from 'next/cache';
 import { Prisma } from '@prisma/client';
+import { auth } from '@/auth/auth';
 
 // Get the Movie list from Db and map to ReadViewModel
 // This is horribly inefficient, but it's just a demo
 // In a real-world scenario, we would do some join/count sorcery in the DB
 // We should also add some separate functions for trending, new movies, etc, but for now 
 // Just get all and sort it out on the client side
-export const getMovies: () => Promise<ReadMovieViewModel[]> = async () => {
-  const movies: ReadMovieViewModel[] = (await prisma.movie.findMany({
+export const getMovies: () => Promise<(ReadMovieViewModel & { isMovieFollowed: boolean; })[]> = async () => {
+  const session = await auth();
+
+  const movies: (ReadMovieViewModel & { isMovieFollowed: boolean; })[] = (await prisma.movie.findMany({
     include: {
       UserRating: {
         select: {
@@ -25,10 +28,14 @@ export const getMovies: () => Promise<ReadMovieViewModel[]> = async () => {
         select: {
           movieId: true,
         }
+      },
+      UserMovieFollow: {
+        select: {
+          userId: true
+        }
       }
     }
   }))
-
     // Coming from .NET, I love Automapper
     // Maybe later get around to configuring something like @automapper
     .map(m => ({
@@ -38,12 +45,15 @@ export const getMovies: () => Promise<ReadMovieViewModel[]> = async () => {
       release_date: m.release_date,
       poster_path: m.poster_path,
       rating: m.UserRating?.length ? m.UserRating.reduce((acc, r) => acc + r.rating, 0) / m.UserRating.length : 0,
-      comments: m.UserComment?.length || 0
+      comments: m.UserComment?.length || 0,
+      isMovieFollowed: m.UserMovieFollow.some(f => !!session?.user?.email && f.userId === session.user.email)
     }));
   return movies;
 };
 
-export const getMovieById: (id: string) => Promise<ReadMovieViewModel | null> = async (id) => {
+export const getMovieById: (id: string) => Promise<(ReadMovieViewModel & { isMovieFollowed: boolean; }) | null> = async (id) => {
+  const session = await auth();
+
   const { success, data: validatedId } = validMovieId.safeParse(id);
   if (!success) {
     // Maybe throw some custom error, but I'll just redirect to Not Found
@@ -77,14 +87,15 @@ export const getMovieById: (id: string) => Promise<ReadMovieViewModel | null> = 
   if (!movie) {
     return null;
   } else {
-    const movieViewModel: ReadMovieViewModel = {
+    const movieViewModel: ReadMovieViewModel & { isMovieFollowed: boolean; } = {
       comments: movie.UserComment.length,
       description: movie.description,
       id: movie.id,
       poster_path: movie.poster_path,
       rating: movie.UserRating.length ? movie.UserRating.reduce((acc, r) => acc + r.rating, 0) / movie.UserRating.length : 0,
       release_date: movie.release_date,
-      title: movie.title
+      title: movie.title,
+      isMovieFollowed: movie.UserMovieFollow.some(f => !!session?.user?.email && f.userId === session.user.email)
     };
     return movieViewModel;
   }
@@ -146,8 +157,9 @@ export const followMovie: (movieId: string, follow: boolean) => Promise<{ ok: bo
   {/*
     https://nextjs.org/docs/app/api-reference/functions/revalidatePath
     */}
-  revalidatePath(`/movie/${movieId}`);
-  revalidatePath(`/`);
+  revalidatePath(`/`, 'layout');
+  revalidatePath(`/movie/following`, 'layout');
+  revalidatePath(`/movie/${movieId}`, 'layout');
 
   return { ok: true, message: `You ${follow ? 'followed' : 'unfollowed'} the movie.` };
 };
@@ -192,9 +204,9 @@ export const rateMovie: (movieId: string, rating: number) => Promise<{ ok: boole
       rating: validatedRating
     }
   });
-
-  revalidatePath(`/movie/${movieId}`);
-  revalidatePath(`/`);
+  revalidatePath(`/`, 'page');
+  revalidatePath(`/movie/following`, 'page');
+  revalidatePath(`/movie/${movieId}`, 'page');
   return { ok: true, message: `Thank you for your ${rating} star${rating !== 1 ? 's' : ''} rating!.` };
 };
 

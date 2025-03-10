@@ -9,16 +9,26 @@ async function main() {
   await prisma.userRating.deleteMany();
   await prisma.userComment.deleteMany();
   await prisma.userMovieFollow.deleteMany();
-  await prisma.roles.deleteMany();
-  await prisma.movie.deleteMany();
+  await prisma.userRole.deleteMany();
+  await prisma.role.deleteMany();
 
-  const data = movies.map(m => ({ ...m, comments: undefined, rating: undefined }));
+  if (await prisma.movie.count() === 0) {
+    const data = movies.map(m => ({ ...m, comments: undefined, rating: undefined }));
+    await prisma.movie.createMany({ data });
+  }
 
-  await prisma.movie.createMany({ data });
-  await prisma.roles.createMany({
-    data: [
+  const data = await prisma.movie.findMany();
+
+  const res = await prisma.role.create({
+    data:
       { name: 'admin' }
-    ]
+
+  });
+  await prisma.userRole.create({
+    data: {
+      userId: 'idandrei94@gmail.com',
+      roleId: res.name
+    }
   });
 
   for (let i = 0; i < 50; i++) {

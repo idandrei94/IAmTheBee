@@ -19,19 +19,18 @@ model Movie {
   UserRating      UserRating[]
 }
 
-model Roles {
-  id   Int    @id @default(autoincrement())
-  name String
+model Role {
+  name     String     @id
+  UserRole UserRole[]
 }
 
 model UserComment {
+  id       Int      @id @default(autoincrement())
   comment  String
   userId   String
   movie    Movie    @relation(fields: [movieId], references: [id])
   movieId  Int
   postedAt DateTime
-
-  @@id([userId, movieId])
 }
 
 model UserRating {
@@ -50,4 +49,12 @@ model UserMovieFollow {
   unseenCount Int
 
   @@id([userId, movieId])
+}
+
+model UserRole {
+  userId String
+  roleId String
+  Role   Role   @relation(fields: [roleId], references: [name])
+
+  @@id([userId, roleId])
 }

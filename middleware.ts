@@ -3,7 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 /*import { NextRequest } from 'next/server';*/
 
 // putting protected routes here (admin etc)
-const protectedRoutes: string[] = [];
+const protectedRoutes: string[] = [
+  '/following'
+];
 
 export default async function middleware(req: NextRequest) {
   const session = await auth();
