@@ -3,7 +3,7 @@ import { ReadMovieViewModel } from '@/models/movie';
 // Since we're using the WebSocket adapter, we don't directly use PrismaClient
 // Instead we use our own custom instance
 import { prisma } from '@/db/prisma';
-import { validMovieId } from '@/models/movie/validators';
+import { validMovieId, validRating } from '@/models/movie/validators';
 import { getUserEmail } from '../utils';
 import { revalidatePath } from 'next/cache';
 import { Prisma } from '@prisma/client';
@@ -150,4 +150,80 @@ export const followMovie: (movieId: string, follow: boolean) => Promise<{ ok: bo
   revalidatePath(`/`);
 
   return { ok: true, message: `You ${follow ? 'followed' : 'unfollowed'} the movie.` };
+};
+
+export const rateMovie: (movieId: string, rating: number) => Promise<{ ok: boolean, message?: string; }> = async (movieId, rating) => {
+  // Check if the user is authorized
+  const email = await getUserEmail();
+  if (!email) {
+    // Maybe throw some custom error, but I'll just redirect to Not Found
+    console.log("Unauthorized: ", email);
+    // I like to do something with a status code list, or a discriminated union of errors, I'll just handle the message contents
+    return { ok: false, message: 'You must login first.' };
+  }
+  // Validate the movieId
+  const { success, data: validatedId } = validMovieId.safeParse(movieId);
+  if (!success) {
+    // Maybe throw some custom error, but I'll just redirect to Not Found
+    console.log("bad request", movieId);
+    return { ok: false, message: `Invalid Movie Id: ${movieId}` };
+  }
+
+  const { success: ratingSuccess, data: validatedRating } = validRating.safeParse(rating);
+  if (!ratingSuccess) {
+    // Maybe throw some custom error, but I'll just redirect to Not Found
+    console.log("bad request", rating);
+    return { ok: false, message: `Invalid Rating: ${movieId}` };
+  }
+
+  await prisma.userRating.upsert({
+    where: {
+      userId_movieId: {
+        userId: email,
+        movieId: parseInt(validatedId)
+      }
+    },
+    update: {
+      rating: validatedRating
+    },
+    create: {
+      userId: email,
+      movieId: parseInt(validatedId),
+      rating: validatedRating
+    }
+  });
+
+  revalidatePath(`/movie/${movieId}`);
+  revalidatePath(`/`);
+  return { ok: true, message: `Thank you for your ${rating} star${rating !== 1 ? 's' : ''} rating!.` };
+};
+
+export const getYourRating: (movieId: string) => Promise<number> = async (movieId) => {
+  const email = await getUserEmail();
+  if (!email) {
+    // Maybe throw some custom error, but I'll just redirect to Not Found
+    console.log("Unauthorized: ", email);
+    // I like to do something with a status code list, or a discriminated union of errors, I'll just handle the message contents
+    return 0;
+  }
+  const { success, data: validatedId } = validMovieId.safeParse(movieId);
+  if (!success) {
+    // Maybe throw some custom error, but I'll just redirect to Not Found
+    console.log("bad request", movieId);
+    return 0;
+  }
+
+  const rating = await prisma.userRating.findUnique({
+    where: {
+      userId_movieId: {
+        userId: email,
+        movieId: parseInt(validatedId)
+      }
+    },
+    select: {
+      rating: true
+    }
+  });
+
+  return rating?.rating || 0;
 };

@@ -1,6 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 import { movies } from '@/db/db-sample';
 
+
+
 async function main() {
   const prisma = new PrismaClient();
 
@@ -18,6 +20,15 @@ async function main() {
       { name: 'admin' }
     ]
   });
+
+  for (let i = 0; i < 50; i++) {
+    const email = `user${i.toFixed().padStart(3, '0')}@google.com`;
+    const movieIds = movies.map(m => m.id).sort(() => Math.random() - 0.5).slice(0, Math.floor(Math.random() * Math.floor(data.length / 2) + 1));
+
+    await prisma.userRating.createMany({
+      data: movieIds.map(id => ({ userId: email, movieId: id, rating: Math.floor(Math.random() * 5) + 1 }))
+    });
+  }
 
   console.log('Movies Db seed successfull');
 }

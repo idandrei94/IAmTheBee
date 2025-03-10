@@ -9,6 +9,7 @@ interface Props {
 }
 
 const MovieList: React.FC<Props> = ({movies, title, notFound}) => {
+  // this would be great as a carousel or side scroller
   return (
     <div className='my-auto sm:my-7'>
       <h2 className='h2b mb-4'>{title}</h2>

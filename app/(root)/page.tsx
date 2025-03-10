@@ -23,11 +23,16 @@ const HomePage: NextPage = async () => {
     .sort((a, b) => b.release_date.getFullYear() - a.release_date.getFullYear())
     .slice(0, 8);
 
+  const moviesYouFollow = allMovies.filter((m) => m.isMovieFollowed);
   return (
     <div className='flex flex-col items-stretch justify-start'>
       <MovieList
-        movies={[]}
-        title='Following'
+        movies={moviesYouFollow.slice(0, 4)}
+        title={
+          moviesYouFollow
+            ? `Following (${moviesYouFollow.length})`
+            : 'Following'
+        }
         notFound='You are not following any movies. Check out our great library!'
       />
       <MovieList

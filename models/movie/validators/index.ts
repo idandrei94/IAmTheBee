@@ -15,3 +15,5 @@ export const createMovieSchema = z.object({
 });
 
 export const validMovieId = z.string().regex(/^\d+$/);
+
+export const validRating = z.number().int().min(1).max(5);

@@ -71,10 +71,10 @@ const MovieId: NextPage<Props> = async ({params}) => {
   );
 };
 
-export const generateStaticParams = async () => {
-  return await getMovies().then((movies) =>
-    movies.map((movie) => ({params: {movieId: movie.id.toString()}}))
-  );
-};
+// export const generateStaticParams = async () => {
+//   return await getMovies().then((movies) =>
+//     movies.map((movie) => ({params: {movieId: movie.id.toString()}}))
+//   );
+// };
 
 export default MovieId;
