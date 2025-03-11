@@ -15,8 +15,11 @@ Logged in users can follow movies, they can rate and comment on them. A user can
 
 Services Used:
 [Neon Postgres](https://console.neon.tech) Database for persistence
+
 [Uploadthing](https://uploadthing.com) for image uploads
+
 Github as OAUTH2 Provider
+
 [HuggingFace](https://huggingface.co/) - For the LLM API. Using the all-MiniLM-L6-v2 model for similarity vectors/scores.
 
 A rough sketch of my thought process:
