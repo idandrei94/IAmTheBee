@@ -1,3 +1,23 @@
+How to setup:
+   1. Clone the repo
+   2. Add the .env file
+   3. npm run dev
+
+The structure of the .env:
+```
+DATABASE_URL="vercel -> storage -> neon postgres"
+NEXT_PUBLIC_BASE_URL="localhost:3000 - should be changed for production"
+AUTH_SECRET="randomly generated secret for next auth"
+AUTH_GITHUB_ID="github -> settings -> developer settings -> create oauth2 app"
+AUTH_GITHUB_SECRET="github oauth app -> new secret"
+LLM_ACCESS_TOKEN="huggingface -> settings -> create new token -> make calls to inference providers / endpoints"
+UPLOADTHING_TOKEN="uploadthing dashboard -> API KEYS Token"
+UPLOADTHING_SECRET="uploadthing dashboard -> API KEYS Secret Key"
+UPLOADTHING_APPID="get it from the uploadthing dashboard url https://uploadthing.com/dashboard/<team name, ignore it>/<this is the app id>/api-keys"
+ADMIN=";-separated email list of users (logged through github) that will be considered administrators"
+```
+
+
 What this application does:
 A simple IMDB clone, featuring login using Github, an Admin role, and the ability to rate, comment or follow movies.
 Admins can create, edit or delete movies, and can delete any comment.
