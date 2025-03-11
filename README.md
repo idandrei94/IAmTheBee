@@ -14,6 +14,7 @@ Logged in users can follow movies, they can rate and comment on them. A user can
    Add a new movie, or update an existing one. Featuring image uploads. The image upload is in need of some sort of cleanup function, or you can over time fill the storage with unused images.
 
 Services Used:
+
 [Neon Postgres](https://console.neon.tech) Database for persistence
 
 [Uploadthing](https://uploadthing.com) for image uploads
