@@ -1,7 +1,8 @@
 How to setup:
    1. Clone the repo
-   2. Add the .env file
-   3. npm run dev
+   2. npm install
+   3. Add the .env file
+   4. npm run dev
 
 The structure of the .env:
 ```
