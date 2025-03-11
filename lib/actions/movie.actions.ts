@@ -18,10 +18,14 @@ import { redirect } from 'next/navigation';
 // In a real-world scenario, we would do some join/count sorcery in the DB, add paging, sorting
 // We should also add some separate functions for trending, new movies, etc, but for now 
 // Just get all and sort it out on the client side
-export const getMovies: () => Promise<(ReadMovieViewModel & { isMovieFollowed: boolean; })[]> = async () => {
+export const getMovies: (take?: number, skip?: number) => Promise<(ReadMovieViewModel & { isMovieFollowed: boolean; })[]> = async (take, skip) => {
+  if ((take !== undefined && take < 0) || (skip !== undefined && skip < 0)) {
+    return [];
+  }
   const session = await auth();
-
   const movies: (ReadMovieViewModel & { isMovieFollowed: boolean; })[] = (await prisma.movie.findMany({
+    take: take,
+    skip: skip,
     include: {
       UserRating: {
         select: {

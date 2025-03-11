@@ -1,7 +1,5 @@
-import { auth } from '@/auth/auth';
 import { NextRequest, NextResponse } from 'next/server';
-import { isAdmin } from './lib/actions/user.actions';
-/*import { NextRequest } from 'next/server';*/
+import { checkUserCanAccess } from './lib/auth';
 
 // putting protected routes here
 const protectedRoutes: string[] = [
@@ -14,25 +12,14 @@ const adminRoutes: string[] = [
 ];
 
 export default async function middleware(req: NextRequest) {
-  const session = await auth();
   const { pathname } = req.nextUrl;
   const routeIsProtected = protectedRoutes.some(route => pathname.startsWith(route));
   const routeIsAdmin = adminRoutes.some(route => pathname.startsWith(route));
+  if (routeIsProtected || routeIsAdmin) {
 
-  if (!session && (routeIsProtected || routeIsAdmin)) {
-    return NextResponse.redirect(new URL('/', req.url));
+    var authError = await checkUserCanAccess(routeIsAdmin);
+    return authError;
   }
-
-  // i'd use a properly shaped token
-  // for ease i'd have just queried the db, but prisma has some issues with this currently
-  // so hackathon solution
-  if (routeIsAdmin) {
-    const isUserAdmin = await isAdmin();
-    if (!isUserAdmin) {
-      return NextResponse.redirect(new URL('/', req.url));
-    }
-  }
-
   return NextResponse.next();
 }
 
