@@ -11,7 +11,6 @@ import { auth } from '@/auth/auth';
 import { z } from 'zod';
 import { createMovieSchema } from '@/models/movie/validators';
 import { isAdmin } from './user.actions';
-import { movies } from '@/db/db-sample';
 import { redirect } from 'next/navigation';
 
 // Get the Movie list from Db and map to ReadViewModel
@@ -261,7 +260,7 @@ export const createMovie: (state: CreateFormState, formData: FormData) => Promis
     description: formData.get('description'),
     title: formData.get('title'),
     poster_path: formData.get('poster_path')
-  } satisfies Record<keyof z.infer<typeof createMovieSchema>, any | undefined>);
+  } satisfies Record<keyof z.infer<typeof createMovieSchema>, FormDataEntryValue | null>);
   // using the zod schema as a baseline for validation messages
   if (!success) {
     if (!error) {

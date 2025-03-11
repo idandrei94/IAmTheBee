@@ -7,9 +7,7 @@ import {
   ChatBubbleOvalLeftIcon,
   EllipsisVerticalIcon
 } from '@heroicons/react/24/solid';
-import {TrashIcon} from '@heroicons/react/24/outline';
 import Image from 'next/image';
-import {deleteMovie} from '@/lib/actions/movie.actions';
 import AdminDeleteMovieButton from './admin-delete-movie-button';
 
 // Just a little bar with some movie infos, links to the edit page, and option to delete
