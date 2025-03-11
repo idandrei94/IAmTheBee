@@ -4,7 +4,7 @@ import {login} from '@/lib/actions/user.actions';
 import {ReadMovieViewModel} from '@/models/movie';
 import {HeartIcon} from '@heroicons/react/24/solid';
 import classNames from 'classnames';
-import React from 'react';
+import React, {useState} from 'react';
 
 /*
   The little heart button on the movie cards, used to follow/unfollow a movie. 
@@ -15,7 +15,8 @@ interface Props {
   isMovieFollowed: boolean;
 }
 
-const LikeButton: React.FC<Props> = ({isMovieFollowed, movie}) => {
+const LikeButton: React.FC<Props> = ({isMovieFollowed: isFollowed, movie}) => {
+  const [isMovieFollowed, setFollowed] = useState(isFollowed);
   const [loading, setLoading] = React.useState(false);
   return (
     <button
@@ -26,6 +27,9 @@ const LikeButton: React.FC<Props> = ({isMovieFollowed, movie}) => {
         const result = await followMovie(`${movie.id}`, !isMovieFollowed);
         if (!result.ok && result.message === 'You must login first.') {
           await login(`/movie/${movie.id}`);
+        }
+        if (result.ok) {
+          setFollowed((old) => !old);
         }
         setLoading(false);
       }}

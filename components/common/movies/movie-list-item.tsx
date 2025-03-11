@@ -5,7 +5,6 @@ import Link from 'next/link';
 import React from 'react';
 import {ChatBubbleOvalLeftIcon} from '@heroicons/react/24/solid';
 import MovieRating from './movie-rating';
-import LikeButton from './movie-list-item-like-button';
 
 /*
   For displaying the movie cards on the home and following pages
@@ -22,12 +21,6 @@ const MovieListItem: React.FC<Props> = ({movie}) => {
         <Link
           href={`/movie/${movie.id}`}
           className='relative h-[450px] w-full'>
-          <div className='absolute top-2 right-2 z-10'>
-            <LikeButton
-              movie={movie}
-              isMovieFollowed={movie.isMovieFollowed}
-            />
-          </div>
           <Image
             className='object-cover -mt-2'
             src={movie.poster_path}

@@ -24,6 +24,9 @@ export const getMovies: (take?: number, skip?: number) => Promise<(ReadMovieView
   }
   const session = await auth();
   const movies: (ReadMovieViewModel & { isMovieFollowed: boolean; })[] = (await prisma.movie.findMany({
+    orderBy: {
+      id: 'asc'
+    },
     take: take,
     skip: skip,
     include: {
