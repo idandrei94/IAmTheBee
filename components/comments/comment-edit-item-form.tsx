@@ -8,6 +8,7 @@ interface Props {
   comment: UserCommentViewModel;
   onClose: () => void;
 }
+// Built on top of the create comment form, for update logic
 
 const CommentEditItemForm: React.FC<Props> = ({show, comment, onClose}) => {
   if (!show) {

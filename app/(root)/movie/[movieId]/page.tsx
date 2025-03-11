@@ -3,7 +3,6 @@ import {NextPage} from 'next';
 import {notFound} from 'next/navigation';
 import React from 'react';
 import Image from 'next/image';
-import {IMAGE_BASE_URL} from '@/lib/constants';
 import Link from 'next/link';
 import {ArrowLeftCircleIcon} from '@heroicons/react/24/outline';
 import MovieDetailsControls from '@/components/common/movies/movie-details-controls';
@@ -79,7 +78,7 @@ const MovieId: NextPage<Props> = async ({params}) => {
               */}
               <Image
                 className='object-contain rounded-lg top-0'
-                src={`${IMAGE_BASE_URL}/${movie.poster_path}`}
+                src={movie.poster_path}
                 alt={movie.title}
                 priority
                 fill

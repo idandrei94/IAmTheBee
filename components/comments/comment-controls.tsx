@@ -11,6 +11,8 @@ interface Props {
   isAdmin: boolean;
 }
 
+// Built of two parts: the buttons themselves, and a mini modal overlay shown on top of the comment component, for edits.
+
 const CommentControls: React.FC<Props> = ({email, comment, isAdmin}) => {
   const [show, setShow] = useState(false);
   if (!email || (email !== comment.userId && !isAdmin)) {

@@ -32,6 +32,7 @@ export const getMovieComments: (movieId: string) => Promise<UserCommentViewModel
   return results;
 };
 
+// Reused for both creation and update. Nothing special, just some validation and db operations
 // We could return some server error/success message and toast it in frontend?
 export const postOrUpdateComment: (newComment: z.infer<typeof postCommentSchema>, commentId?: number) => Promise<boolean> = async (newComment, commentId) => {
   const email = (await auth())?.user?.email;
@@ -53,7 +54,7 @@ export const postOrUpdateComment: (newComment: z.infer<typeof postCommentSchema>
 
   const movie = await prisma.movie.findFirst({
     where: {
-      id: parseInt(movieId)
+      id: movieId
     }
   });
 
@@ -110,7 +111,8 @@ export const postOrUpdateComment: (newComment: z.infer<typeof postCommentSchema>
   return true;
 };
 
-// This is only here for dev convenience
+// This is only here for dev convenience. I wanted to test how it looks like if someone else posts the comment
+// To check displays and notifications
 export const postFakeComment: (movieId: number, email: string) => Promise<void> = async (movieId: number, email) => {
   if (process.env.NODE_ENV !== 'development') {
     return;

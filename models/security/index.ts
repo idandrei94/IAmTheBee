@@ -5,3 +5,9 @@ export type DbRole = {
   name: string,
   users: DbUser[];
 };
+
+export type TokenPayload = {
+  userId: string;
+  roles: string[];
+  expiresAt: Date;
+};

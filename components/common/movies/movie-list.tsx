@@ -2,6 +2,10 @@ import {ReadMovieViewModel} from '@/models/movie';
 import React from 'react';
 import classNames from 'classnames';
 
+/*
+A very basic HoC List, has nothing special other than a renderFunction. React Native FlatList at home. 
+*/
+
 interface Props {
   movies: (ReadMovieViewModel & {isMovieFollowed: boolean})[];
   title?: string;

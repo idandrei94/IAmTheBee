@@ -2,6 +2,10 @@
 import {clearNotifications} from '@/lib/actions/user.actions';
 import React, {useEffect} from 'react';
 
+/*
+dummy component to quickly refresh the notifications when opening a movie
+*/
+
 interface Props {
   movieId: string;
 }

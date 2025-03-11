@@ -5,8 +5,11 @@ import Link from 'next/link';
 import React from 'react';
 import {ChatBubbleOvalLeftIcon} from '@heroicons/react/24/solid';
 import MovieRating from './movie-rating';
-import {IMAGE_BASE_URL} from '@/lib/constants';
 import LikeButton from './movie-list-item-like-button';
+
+/*
+  For displaying the movie cards on the home and following pages
+*/
 
 interface Props {
   movie: ReadMovieViewModel & {isMovieFollowed: boolean};
@@ -27,7 +30,7 @@ const MovieListItem: React.FC<Props> = ({movie}) => {
           </div>
           <Image
             className='object-cover -mt-2'
-            src={`${IMAGE_BASE_URL}/${movie.poster_path}`}
+            src={movie.poster_path}
             alt={movie.title}
             priority
             fill
@@ -50,11 +53,11 @@ const MovieListItem: React.FC<Props> = ({movie}) => {
           <div className='flex flex-row items-center justify-between gap-3'>
             <Link
               href={`/movie/${movie.id}`}
-              className='flex flex-row items-center justify-start gap-1'>
+              className='flex flex-row items-center justify-start gap-1 text-gray-500'>
               <ChatBubbleOvalLeftIcon
                 height={24}
                 width={24}
-                className='text-primary'
+                className=''
               />
               {movie.comments}
             </Link>

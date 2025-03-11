@@ -11,9 +11,18 @@ async function main() {
   await prisma.userMovieFollow.deleteMany();
   await prisma.userRole.deleteMany();
   await prisma.role.deleteMany();
+  await prisma.movie.deleteMany();
+  const url = 'https://api.uploadthing.com/v6/listFiles';
+  const options = {
+    method: 'POST',
+    headers: { 'x-uploadthing-api-key': `${process.env.UPLOADTHING_SECRET}`, 'content-type': 'application/json' },
+    body: JSON.stringify({})
+  };
+  const response = await fetch(url, options);
+  const imageData = (await response.json() as { files: { name: string, key: string; }[]; }).files;
 
   if (await prisma.movie.count() === 0) {
-    const data = movies.map(m => ({ ...m, comments: undefined, rating: undefined }));
+    const data = movies.map(m => ({ ...m, comments: undefined, rating: undefined, poster_path: `https://${process.env.UPLOADTHING_APPID}.ufs.sh/f/${imageData.find(i => i.name === m.poster_path)?.key}` }));
     await prisma.movie.createMany({ data });
   }
 

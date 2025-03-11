@@ -1,9 +1,13 @@
 import { UserComment, UserMovieFollow, UserRating } from '@prisma/client';
-import { z } from 'zod';
 import { createMovieSchema } from './validators';
+import { z } from 'zod';
 
-export type ReadMovieViewModel = z.infer<typeof createMovieSchema> & {
+export type ReadMovieViewModel = {
   id: number,
+  title: string,
+  description: string,
+  release_date: Date,
+  poster_path: string,
   comments: number;
   rating: number;
 };
@@ -32,3 +36,6 @@ export type ReadMovieCommentViewModel = {
   user: string;
   postedAt: Date;
 };
+
+
+export type CreateFormState = Partial<Record<keyof z.infer<typeof createMovieSchema>, string>> & { other?: string; };

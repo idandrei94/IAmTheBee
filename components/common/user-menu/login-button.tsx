@@ -8,6 +8,10 @@ interface Props {
   logged: boolean;
 }
 
+/*
+next-auth makes this pretty easy
+*/
+
 const LoginButton: React.FC<Props> = ({logged}) => {
   return (
     <Button

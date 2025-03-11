@@ -8,6 +8,10 @@ interface Props {
   movieId: string;
 }
 
+/*
+The main comments container on the movie details page
+*/
+
 const Comments: React.FC<Props> = async ({movieId}) => {
   const comments = await getMovieComments(movieId);
   const isLogged = !!(await auth())?.user?.email;

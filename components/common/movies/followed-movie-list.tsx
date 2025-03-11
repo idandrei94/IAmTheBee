@@ -4,6 +4,11 @@ import MovieList from './movie-list';
 import MovieListItem from './movie-list-item';
 import MovieNotifCount from './movie-notif-count';
 
+/*
+Just a little utility wrapper around the basic movie list component. It's similar to the one on the home page,
+but this one also shows individual notification for each movie
+*/
+
 interface Props {
   movies: (ReadMovieViewModel & {isMovieFollowed: boolean})[];
   title?: string;

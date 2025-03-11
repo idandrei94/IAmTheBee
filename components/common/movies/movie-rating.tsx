@@ -3,6 +3,13 @@ import React, {useState} from 'react';
 import {StarIcon} from '@heroicons/react/24/solid';
 import {rateMovie} from '@/lib/actions/movie.actions';
 
+/*
+a simple 5 star display, coloring them based on the rating value
+editable means the stars are clickable, and we attempt to leave a rating to the given movieId
+
+In other components I did it nicer, with some type compositions
+*/
+
 interface Props {
   stars: number;
   text?: string;

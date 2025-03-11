@@ -1,5 +1,5 @@
 'use server';
-import { ReadMovieViewModel } from '@/models/movie';
+import { CreateFormState, ReadMovieViewModel } from '@/models/movie';
 // Since we're using the WebSocket adapter, we don't directly use PrismaClient
 // Instead we use our own custom instance
 import { prisma } from '@/db/prisma';
@@ -8,10 +8,15 @@ import { getUserEmail } from '../utils';
 import { revalidatePath } from 'next/cache';
 import { Prisma } from '@prisma/client';
 import { auth } from '@/auth/auth';
+import { z } from 'zod';
+import { createMovieSchema } from '@/models/movie/validators';
+import { isAdmin } from './user.actions';
+import { movies } from '@/db/db-sample';
+import { redirect } from 'next/navigation';
 
 // Get the Movie list from Db and map to ReadViewModel
 // This is horribly inefficient, but it's just a demo
-// In a real-world scenario, we would do some join/count sorcery in the DB
+// In a real-world scenario, we would do some join/count sorcery in the DB, add paging, sorting
 // We should also add some separate functions for trending, new movies, etc, but for now 
 // Just get all and sort it out on the client side
 export const getMovies: () => Promise<(ReadMovieViewModel & { isMovieFollowed: boolean; })[]> = async () => {
@@ -51,6 +56,7 @@ export const getMovies: () => Promise<(ReadMovieViewModel & { isMovieFollowed: b
   return movies;
 };
 
+// Pretty much the same as get all, just with a single id
 export const getMovieById: (id: string) => Promise<(ReadMovieViewModel & { isMovieFollowed: boolean; }) | null> = async (id) => {
   const session = await auth();
 
@@ -101,6 +107,7 @@ export const getMovieById: (id: string) => Promise<(ReadMovieViewModel & { isMov
   }
 };
 
+// Find out what movies a user follows
 export const getUserFollows: () => Promise<number[]> = async () => {
   const email = await getUserEmail();
   if (!email) {
@@ -113,6 +120,8 @@ export const getUserFollows: () => Promise<number[]> = async () => {
 
   return movies.map(m => m.movieId);
 };
+
+// Allow a user to follow a movie. It's a many-to-many between users and movies.
 export const followMovie: (movieId: string, follow: boolean) => Promise<{ ok: boolean, message?: string; }> = async (movieId, follow) => {
   // Check if the user is authorized
   const email = await getUserEmail();
@@ -158,12 +167,14 @@ export const followMovie: (movieId: string, follow: boolean) => Promise<{ ok: bo
     https://nextjs.org/docs/app/api-reference/functions/revalidatePath
     */}
   revalidatePath(`/`, 'layout');
+  revalidatePath(`/admin`, 'page');
   revalidatePath(`/movie/following`, 'layout');
   revalidatePath(`/movie/${movieId}`, 'layout');
 
   return { ok: true, message: `You ${follow ? 'followed' : 'unfollowed'} the movie.` };
 };
 
+// Similar to following a movie, but for rating.
 export const rateMovie: (movieId: string, rating: number) => Promise<{ ok: boolean, message?: string; }> = async (movieId, rating) => {
   // Check if the user is authorized
   const email = await getUserEmail();
@@ -187,7 +198,7 @@ export const rateMovie: (movieId: string, rating: number) => Promise<{ ok: boole
     console.log("bad request", rating);
     return { ok: false, message: `Invalid Rating: ${movieId}` };
   }
-
+  // Update or Insert if missing
   await prisma.userRating.upsert({
     where: {
       userId_movieId: {
@@ -205,11 +216,13 @@ export const rateMovie: (movieId: string, rating: number) => Promise<{ ok: boole
     }
   });
   revalidatePath(`/`, 'page');
+  revalidatePath(`/admin`, 'page');
   revalidatePath(`/movie/following`, 'page');
   revalidatePath(`/movie/${movieId}`, 'page');
   return { ok: true, message: `Thank you for your ${rating} star${rating !== 1 ? 's' : ''} rating!.` };
 };
 
+// Getting your specific rating for a movie, instead of the movie's average
 export const getYourRating: (movieId: string) => Promise<number> = async (movieId) => {
   const email = await getUserEmail();
   if (!email) {
@@ -238,4 +251,75 @@ export const getYourRating: (movieId: string) => Promise<number> = async (movieI
   });
 
   return rating?.rating || 0;
+};
+
+// Admin movie creation, with file uploads
+export const createMovie: (state: CreateFormState, formData: FormData) => Promise<CreateFormState> = async (state, formData) => {
+  const { success, data, error } = createMovieSchema.safeParse({
+    id: formData.get('id'),
+    release_date: formData.get('release_date'),
+    description: formData.get('description'),
+    title: formData.get('title'),
+    poster_path: formData.get('poster_path')
+  } satisfies Record<keyof z.infer<typeof createMovieSchema>, any | undefined>);
+  // using the zod schema as a baseline for validation messages
+  if (!success) {
+    if (!error) {
+      return {
+        other: "Unknown error."
+      };
+    } else {
+      console.log(Object.fromEntries(error.issues.map(i => [i.path[0], i.message])));
+      return Object.fromEntries(error.issues.map(i => [i.path[0], i.message]));
+    }
+  }
+
+  await prisma.movie.create({
+    data: {
+      description: data.description,
+      poster_path: data.poster_path,
+      release_date: new Date(data.release_date),
+      title: data.title
+    }
+  });
+  return redirect('/admin');
+};
+
+export const deleteMovie: (movieId: string) => Promise<void> = async (movieId) => {
+  const { success, data: validatedId } = validMovieId.safeParse(movieId);
+  if (!success || !isAdmin()) {
+    return;
+  }
+  const id = parseInt(validatedId);
+
+  // first gotta clean up all the movie data
+
+  await prisma.userComment.deleteMany({
+    where: {
+      movieId: id
+    }
+  });
+  await prisma.userMovieFollow.deleteMany({
+    where: {
+      movieId: id
+    }
+  });
+  await prisma.userRating.deleteMany({
+    where: {
+      movieId: id
+    }
+  });
+  await prisma.movie.delete({
+    where: {
+      id
+    }
+  });
+
+  // I would also clean the poster image up from upload thing, they have an api and it's easy
+  // But it was inconvenient while working on this so I left them in
+
+  revalidatePath(`/`, 'page');
+  revalidatePath(`/admin`, 'page');
+  revalidatePath(`/movie/following`, 'page');
+  revalidatePath(`/movie/${movieId}`, 'page');
 };

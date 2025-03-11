@@ -6,6 +6,10 @@ import {HeartIcon} from '@heroicons/react/24/solid';
 import classNames from 'classnames';
 import React from 'react';
 
+/*
+  The little heart button on the movie cards, used to follow/unfollow a movie. 
+*/
+
 interface Props {
   movie: ReadMovieViewModel;
   isMovieFollowed: boolean;

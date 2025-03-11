@@ -9,6 +9,9 @@ interface Props {
   userIsAdmin: boolean;
 }
 
+// Shows the comment contents.
+// Also displays Commment Controls, which is shown when a user can update/delete the respective comment.
+
 const CommentListItem: React.FC<Props> = async ({
   comment: commentViewModel,
   userIsAdmin

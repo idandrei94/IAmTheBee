@@ -3,6 +3,8 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaNeon } from '@prisma/adapter-neon';
 import ws from 'ws';
 
+/* Wiring this to work on Next, using WebSockets */
+
 neonConfig.webSocketConstructor = ws;
 // Using interpolation to force type string
 const connString = `${process.env.DATABASE_URL}`;

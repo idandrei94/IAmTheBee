@@ -17,6 +17,10 @@ import {
   FormMessage
 } from '../ui/form';
 
+/*
+The form that creates or updates a comment. I wanted to try something new, other than formik.
+*/
+
 type Props =
   | {
       movieId: number;
@@ -41,7 +45,7 @@ const CreateCommentForm: React.FC<Props> = (props) => {
   const form = useForm<z.infer<typeof postCommentSchema>>({
     resolver: zodResolver(postCommentSchema),
     defaultValues: {
-      movieId: `${movieId}`,
+      movieId: movieId,
       comment: variant === 'edit' ? props.comment : ''
     }
   });
@@ -50,6 +54,7 @@ const CreateCommentForm: React.FC<Props> = (props) => {
     data
   ) => {
     setLoading(true);
+    // This component is reused for comment updates
     const success = await postOrUpdateComment(
       data,
       variant === 'create' ? undefined : props.commentId
@@ -58,17 +63,15 @@ const CreateCommentForm: React.FC<Props> = (props) => {
       if (variant === 'create') {
         form.reset({
           comment: '',
-          movieId: `${movieId}`
+          movieId: movieId
         });
       } else {
-        console.log('cancel');
-        console.log('qwe');
         props.onCancel();
       }
     }
     setLoading(false);
   };
-
+  // This doesn't do anything special, pretty much just a form with the inputs wired through react-hook-form
   return (
     <div className='flex items-start flex-1'>
       <div className='min-w-0 flex-1'>
@@ -130,17 +133,19 @@ const CreateCommentForm: React.FC<Props> = (props) => {
               {/*Somehow the formState isSubmitting fires a stack call late and you can double submit */}
               <div className='shrink-0 flex flex-row gap-3'>
                 {variant === 'create' ? (
-                  <button
-                    type='button'
-                    onClick={async () => {
-                      setLoading(true);
-                      await postFakeComment(movieId, 'bob@ross.com');
-                      setLoading(false);
-                    }}
-                    disabled={loading}
-                    className='inline-flex items-center rounded-md bg-slate-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600'>
-                    Post Fake Comment
-                  </button>
+                  process.env.NODE_ENV === 'development' && (
+                    <button
+                      type='button'
+                      onClick={async () => {
+                        setLoading(true);
+                        await postFakeComment(movieId, 'bob@ross.com');
+                        setLoading(false);
+                      }}
+                      disabled={loading}
+                      className='inline-flex items-center rounded-md bg-slate-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-600'>
+                      Post Fake Comment
+                    </button>
+                  )
                 ) : (
                   <button
                     type='button'

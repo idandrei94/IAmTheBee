@@ -5,6 +5,10 @@ import {ReadMovieViewModel} from '@/models/movie';
 import {auth} from '@/auth/auth';
 import {getUserFollows, getYourRating} from '@/lib/actions/movie.actions';
 
+/*
+For the movie details screen, packs together the like, leave-a-rating and rating controls 
+*/
+
 interface Props {
   movie: ReadMovieViewModel;
 }

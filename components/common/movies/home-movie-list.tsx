@@ -3,6 +3,10 @@ import React from 'react';
 import MovieListItem from './movie-list-item';
 import MovieList from './movie-list';
 
+/*
+Just a little utility wrapper around the basic movie list component
+*/
+
 interface Props {
   movies: (ReadMovieViewModel & {isMovieFollowed: boolean})[];
   title?: string;
