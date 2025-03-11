@@ -4,6 +4,7 @@ import {getUserEmail} from '@/lib/utils';
 import FollowedMovieList from '@/components/common/movies/followed-movie-list';
 import HomeMovieList from '@/components/common/movies/home-movie-list';
 import ClearNotifs from '@/components/common/movies/clear-notifs';
+import InfiniteMovies from '@/components/common/movies/infinite-movies';
 
 export const metadata: Metadata = {
   title: 'Home'
@@ -48,6 +49,7 @@ const HomePage: NextPage = async () => {
         movies={trendingMovies}
         title='Trending'
       />
+      <InfiniteMovies />
     </div>
   );
 };

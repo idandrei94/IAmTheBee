@@ -1,7 +1,6 @@
 "use server";
 
 import { NextResponse } from 'next/server';
-import { isAdmin } from './actions/user.actions';
 import { auth } from '@/auth/auth';
 
 
@@ -14,7 +13,8 @@ export const checkUserCanAccess = async (admin: boolean) => {
     return NextResponse.redirect(new URL('/'));
   }
   if (admin) {
-    const isUserAdmin = await isAdmin();
+    const email = (await auth())?.user?.email;
+    const isUserAdmin = !!email && `${process.env.ADMIN}`.split(';').includes(email);
     if (!isUserAdmin) {
       return NextResponse.redirect(new URL('/'));
     }
