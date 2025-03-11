@@ -131,6 +131,7 @@ const AdminMovieForm: React.FC<Props> = ({movie}) => {
                         />
                       </div>
                     )}
+                    <div className='hidden text-blue-600' />
                     <div className='mt-4 flex text-sm/6 text-gray-600 items-center justify-center'>
                       <UploadButton
                         endpoint='imageUploader'

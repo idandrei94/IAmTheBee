@@ -1,7 +1,6 @@
 import { auth } from '@/auth/auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { isAdmin } from './lib/actions/user.actions';
-import { prisma } from './db/prisma';
 /*import { NextRequest } from 'next/server';*/
 
 // putting protected routes here
@@ -26,12 +25,10 @@ export default async function middleware(req: NextRequest) {
 
   // i'd use a properly shaped token
   // for ease i'd have just queried the db, but prisma has some issues with this currently
-  // so hackathon solution, querying itself for db access
+  // so hackathon solution
   if (routeIsAdmin) {
-    const isAdmin = await fetch(`http://localhost:3000/api/auth/admin/check`, {
-      headers: req.headers
-    }).then(r => r.text()) === 'true';
-    if (!isAdmin) {
+    const isUserAdmin = await isAdmin();
+    if (!isUserAdmin) {
       return NextResponse.redirect(new URL('/', req.url));
     }
   }

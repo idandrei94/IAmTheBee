@@ -9,8 +9,6 @@ async function main() {
   await prisma.userRating.deleteMany();
   await prisma.userComment.deleteMany();
   await prisma.userMovieFollow.deleteMany();
-  await prisma.userRole.deleteMany();
-  await prisma.role.deleteMany();
   await prisma.movie.deleteMany();
   const url = 'https://api.uploadthing.com/v6/listFiles';
   const options = {
@@ -27,18 +25,6 @@ async function main() {
   }
 
   const data = await prisma.movie.findMany();
-
-  const res = await prisma.role.create({
-    data:
-      { name: 'admin' }
-
-  });
-  await prisma.userRole.create({
-    data: {
-      userId: 'idandrei94@gmail.com',
-      roleId: res.name
-    }
-  });
 
   for (let i = 0; i < 50; i++) {
     const email = `user${i.toFixed().padStart(3, '0')}@google.com`;

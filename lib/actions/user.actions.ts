@@ -81,22 +81,5 @@ export const clearNotifications: (movieId: string) => Promise<void> = async (mov
 // Again, with a proper auth solution, I'd just check the roles claim
 export const isAdmin: () => Promise<boolean> = async () => {
   const email = (await auth())?.user?.email;
-  if (!email) {
-    return false;
-  }
-  const role = (await prisma.userRole.findFirst({
-    include: {
-      Role: {
-        select: {
-          name: true
-        }
-      }
-    },
-    where: {
-      userId: email,
-      roleId: 'admin'
-    }
-  }));
-
-  return !!role;
+  return !!email && `${process.env.ADMIN}`.split(';').includes(email);
 };
