@@ -1,3 +1,4 @@
+'use server';
 import { ReadMovieViewModel } from '@/models/movie';
 import { searchInputValidation, validOrEmptyMovieId } from '@/models/movie/validators';
 import { HfInference } from "@huggingface/inference";
@@ -15,12 +16,15 @@ add some indexing magic, and get relations by some sort of select top(X) from mo
 export const getMovieSuggestions: (input: string, exclusion?: string) => Promise<(ReadMovieViewModel & { isMovieFollowed: boolean; })[]> = async (input, exclusion) => {
   const { success, data: validatedInput } = searchInputValidation.safeParse(input);
   const { success: movieIdOk, data: validatedId } = validOrEmptyMovieId.safeParse(exclusion);
-  if (!success || !movieIdOk) {
+  if (!success) {
     return [];
   }
 
+  const id = movieIdOk ? parseInt(validatedId) : undefined;
+
   // Would be more efficient to query with filter, but I didn't want to redo the mapping
-  const movies = (await getMovies()).filter(m => !validatedId || m.id !== parseInt(validatedId));
+  const movies = (await getMovies()).filter(m => m.id !== id);
+  console.log('movies', movies.length);
   const descriptions = movies.map(m => m.description);
   const client = new HfInference(process.env.LLM_ACCESS_TOKEN);
 
@@ -34,7 +38,7 @@ export const getMovieSuggestions: (input: string, exclusion?: string) => Promise
   });
 
   const weights = output.map((w, index) => ({ index, w })).sort((a, b) => b.w - a.w);
-
+  console.log(weights.slice(0, 6));
   const top6 = weights.slice(0, 6).map(({ index }) => movies[index]);
 
   return top6;

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {APP_NAME} from '@/lib/constants';
 import HeaderMenu from './header-menu';
+import MovieSearchBar from '../movies/movie-search-bar';
 
 const Header = () => {
   return (
@@ -24,6 +25,7 @@ const Header = () => {
             </span>
           </Link>
         </div>
+        <MovieSearchBar />
         <HeaderMenu />
       </div>
       <div className='text-destructive-foreground bg-destructive w-full text-center py-3 font-3xl font-bold'>

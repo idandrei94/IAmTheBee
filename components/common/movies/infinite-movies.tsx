@@ -18,7 +18,6 @@ const InfiniteMovies: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [shouldStop, setShouldStop] = useState(false);
   const {ref, inView} = useInView();
-  console.log(movies.length);
 
   const loadMovies = useCallback(async () => {
     setLoading(true);
